@@ -20,7 +20,7 @@ public class Gallery extends CordovaPlugin {
   private static final String ACTION_GET_ALL_PHOTOS = "getAllPhotos";
 
   @Override
-  public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+  public boolean execute(String action, JSONArray args,  final CallbackContext callbackContext) throws JSONException {
     try {
       if (ACTION_GET_ALL_PHOTOS.equals(action)) {
 
@@ -28,8 +28,7 @@ public class Gallery extends CordovaPlugin {
         cordova.getThreadPool().execute(new Runnable() {
           public void run() {
             // Return list of images in JSON Array
-            // callbackContext.success(new JSONArray(getAllPhotos(cordova.getActivity())));
-            callbackContext.success(new String("gallery"));
+            callbackContext.success(new JSONArray(getAllPhotos(cordova.getActivity())));
           }
         });
         return true;
