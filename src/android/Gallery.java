@@ -2,11 +2,12 @@ package org.apache.cordova.gallery;
 
 import java.util.ArrayList;
 
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CallbackContext;
+
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -19,27 +20,25 @@ public class Gallery extends CordovaPlugin {
   private static final String ACTION_GET_ALL_PHOTOS = "getAllPhotos";
 
   @Override
-  public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
+  public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
     try {
-      // if action is getAllPhotos
       if (ACTION_GET_ALL_PHOTOS.equals(action)) {
 
         // DO operation in thread pool to avoid cordova thread blocking
-        cordova.getThreadPool().equals(new Runnable() {
+        cordova.getThreadPool().execute(new Runnable() {
           public void run() {
             // Return list of images in JSON Array
             // callbackContext.success(new JSONArray(getAllPhotos(cordova.getActivity())));
             callbackContext.success(new String("gallery"));
           }
         });
-
+        return true;
       }
+      return false;
     } catch (Exception e) {
       e.printStackTrace();
       return false;
     }
-
-    return super.execute(action, args, callbackContext);
   }
 
   /**
