@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-gallery" version="1.0.0">
+  <name>Gallery</name>
+  <description>Cordova Platform Gallery Plugin</description>
+  <author>liqm <cosdyt@gmail.com></author>
+  <keywords>cordova,gallery,photo</keywords>
+  <license>Apache 2.0</license>
+  <js-module src="www/index.js" name="Gallery">
+    <clobbers target="cordova.plugins.Gallery" />
+  </js-module>
+  <!-- android -->
+  <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="Gallery">
+        <param name="android-package" value="org.apache.cordova.gallery.Gallery"/>
+      </feature>
+    </config-file>
+    <config-file target="AndroidManifest.xml" parent="/*">
+      <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    </config-file>
+    <source-file src="src/android/Gallery.java" target-dir="src/org/apache/cordova/gallery" />
+  </platform>
+</plugin>
