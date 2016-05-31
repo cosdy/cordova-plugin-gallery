@@ -103,6 +103,7 @@ public class Gallery extends CordovaPlugin {
     int column_index_data, column_index_folder_name;
 
     String absolutePathOfPhoto = null;
+    String folderName = null;
 
     uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
