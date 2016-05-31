@@ -52,6 +52,7 @@ public class Gallery extends CordovaPlugin {
 
     ArrayList<String> listOfAllPhotos = new ArrayList<String>();
 
+    String folderNameOfPhoto = null;
     String absolutePathOfPhoto = null;
 
     uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
@@ -65,9 +66,10 @@ public class Gallery extends CordovaPlugin {
     column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 
     while (cursor.moveToNext()) {
+      folderNameOfPhoto = cursor.getString(column_index_folder_name);
       absolutePathOfPhoto = cursor.getString(column_index_data);
 
-      listOfAllPhotos.add(absolutePathOfPhoto);
+      listOfAllPhotos.add(folderNameOfPhoto + absolutePathOfPhoto);
     }
     return listOfAllPhotos;
   }
