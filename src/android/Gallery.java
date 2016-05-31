@@ -64,7 +64,7 @@ public class Gallery extends CordovaPlugin {
    * @param activity the activity
    * @return ArrayList with images Path
    */
-  private ArrayList<String> getAllPhotos(Activity activity) {
+  private ArrayList<PhotoItem> getAllPhotos(Activity activity) {
     Uri uri;
     Cursor cursor;
 
