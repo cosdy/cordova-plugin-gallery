@@ -18,7 +18,6 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 
 import android.net.Uri;
-import org.apache.cordova.gallery.PhotoItem;
 
 public class Gallery extends CordovaPlugin {
 
