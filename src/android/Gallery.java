@@ -23,7 +23,7 @@ public class Gallery extends CordovaPlugin {
 
   private static final String ACTION_GET_ALL_ALBUMS = "getAllAlbums";
 
-  public static Map<String, ArrayList<String>> albumMap = new HashMap<>();
+  public static HashMap<String, ArrayList<String>> albumMap = new HashMap<String, ArrayList<String>>();
 
   @Override
   public boolean execute(String action, JSONArray args,  final CallbackContext callbackContext) throws JSONException {
