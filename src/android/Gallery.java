@@ -17,6 +17,9 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 
+import android.net.Uri;
+import org.apache.cordova.gallery.PhotoItem;
+
 public class Gallery extends CordovaPlugin {
 
   private static final String ACTION_GET_ALL_PHOTOS = "getAllPhotos";
@@ -65,28 +68,54 @@ public class Gallery extends CordovaPlugin {
   private ArrayList<String> getAllPhotos(Activity activity) {
     Uri uri;
     Cursor cursor;
-    int column_index_data, column_index_folder_name;
-
-    ArrayList<String> listOfAllPhotos = new ArrayList<String>();
-
-    String absolutePathOfPhoto = null;
 
     uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+    final String[] projection = {MediaStore.Images.Thumbnails.DATA, MediaStore.Images.Thumbnails.IMAGE_ID};
 
-    String[] projection = { MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
+    Cursor thumbnailsCursor = activity.getContentResolver().query(uri, projection, null, null, null);
 
-    cursor = activity.getContentResolver().query(uri, projection, null, null, null);
+    // Extract the proper column thumbnails
+    int thumbnailColumnIndex = thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
 
-    column_index_data = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
+    ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(thumbnailsCursor.getCount());
 
-    column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+    if (thumbnailsCursor.moveToFirst()) {
+      do {
+        // Generate a tiny thumbnail version.
+        int thumbnailImageID = thumbnailsCursor.getInt(thumbnailColumnIndex);
+        String thumbnailPath = thumbnailsCursor.getString(thumbnailImageID);
+        Uri thumbnailUri = Uri.parse(thumbnailPath);
+        Uri fullImageUri = uriToFullImage(thumbnailsCursor, activity);
 
-    while (cursor.moveToNext()) {
-      absolutePathOfPhoto = cursor.getString(column_index_data);
-      
-      listOfAllPhotos.add(absolutePathOfPhoto);
+        // Create the list item.
+        PhotoItem newItem = new PhotoItem(thumbnailUri, fullImageUri);
+        photos.add(newItem);
+      } while (thumbnailsCursor.moveToNext());
     }
-    return listOfAllPhotos;
+    thumbnailsCursor.close();
+    
+    return photos;
+  }
+
+  /**
+   * Get the path to the full image for a given thumbnail.
+   */
+  private static Uri uriToFullImage(Cursor thumbnailsCursor, Activity activity){
+    String imageId = thumbnailsCursor.getString(thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.IMAGE_ID));
+
+    // Request image related to this thumbnail
+    String[] filePathColumn = { MediaStore.Images.Media.DATA };
+    Cursor imagesCursor = activity.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, filePathColumn, MediaStore.Images.Media._ID + "=?", new String[]{imageId}, null);
+
+    if (imagesCursor != null && imagesCursor.moveToFirst()) {
+      int columnIndex = imagesCursor.getColumnIndex(filePathColumn[0]);
+      String filePath = imagesCursor.getString(columnIndex);
+      imagesCursor.close();
+      return Uri.parse(filePath);
+    } else {
+      imagesCursor.close();
+      return Uri.parse("");
+    }
   }
 
   /**
