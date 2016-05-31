@@ -64,7 +64,7 @@ public class Gallery extends CordovaPlugin {
    * @param activity the activity
    * @return ArrayList with images Path
    */
-  private ArrayList<PhotoItem> getAllPhotos(Activity activity) {
+  private ArrayList<ArrayList> getAllPhotos(Activity activity) {
     Uri uri;
     Cursor cursor;
 
@@ -76,7 +76,7 @@ public class Gallery extends CordovaPlugin {
     // Extract the proper column thumbnails
     int thumbnailColumnIndex = thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
 
-    ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>(thumbnailsCursor.getCount());
+    ArrayList<ArrayList> photos = new ArrayList<ArrayList>(thumbnailsCursor.getCount());
 
     if (thumbnailsCursor.moveToFirst()) {
       do {
@@ -86,11 +86,13 @@ public class Gallery extends CordovaPlugin {
         Uri thumbnailUri = Uri.parse(thumbnailPath);
         Uri fullImageUri = uriToFullImage(thumbnailsCursor, activity);
 
-        // Create the list item.
-        PhotoItem newItem = new PhotoItem(thumbnailUri, fullImageUri);
-        photos.add(newItem);
+        ArrayList<String> photo = new ArrayList<String>(2);
+        photo.add(thumbnailUri);
+        photo.add(fullImageUri);
+        photos.add(photo);
       } while (thumbnailsCursor.moveToNext());
     }
+    
     thumbnailsCursor.close();
     
     return photos;
