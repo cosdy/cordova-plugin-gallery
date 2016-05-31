@@ -28,8 +28,7 @@ public class Gallery extends CordovaPlugin {
         cordova.getThreadPool().execute(new Runnable() {
           public void run() {
             // Return list of images in JSON Array
-            // callbackContext.success(new JSONArray(getAllPhotos(cordova.getActivity())));
-            callbackContext.success(new String("Gallery"));
+            callbackContext.success(new JSONArray(getAllPhotos(cordova.getActivity())));
           }
         });
         return true;

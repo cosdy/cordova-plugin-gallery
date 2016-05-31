@@ -7,7 +7,7 @@ var exec = require('cordova/exec');
 var Gallery = {};
 
 Gallery.getAllPhotos = function(successCallback, errorCallback) {
-  return exec(successCallback, errorCallback, "Gallery", "getAllPhotos", []);
+  exec(successCallback, errorCallback, "Gallery", "getAllPhotos", []);
 };
 
 module.exports = Gallery;
