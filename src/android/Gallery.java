@@ -75,7 +75,7 @@ public class Gallery extends CordovaPlugin {
     String thumbnailPath;
 
     final String[] projection = {MediaStore.Images.Thumbnails.DATA, MediaStore.Images.Thumbnails.IMAGE_ID};
-    Cursor thumbnailsCursor = context.getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, projection, null, null, null);
+    Cursor thumbnailsCursor = activity.getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, projection, null, null, null);
     
     int thumbnailColumnIndex = thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
 
@@ -87,7 +87,7 @@ public class Gallery extends CordovaPlugin {
         thumbnailImageID = thumbnailsCursor.getInt(thumbnailColumnIndex);
         thumbnailPath = thumbnailsCursor.getString(thumbnailImageID);
         // Uri thumbnailUri = Uri.parse(thumbnailPath);
-        // Uri fullImageUri = uriToFullImage(thumbnailsCursor, context);
+        // Uri fullImageUri = uriToFullImage(thumbnailsCursor, activity);
 
         // Create the list item.
         // PhotoItem newItem = new PhotoItem(thumbnailUri, fullImageUri);
