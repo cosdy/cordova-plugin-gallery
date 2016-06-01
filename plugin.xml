@@ -19,6 +19,5 @@
       <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     </config-file>
     <source-file src="src/android/Gallery.java" target-dir="src/org/apache/cordova/gallery" />
-    <source-file src="src/android/PhotoItem.java" target-dir="src/org/apache/cordova/gallery" />
   </platform>
 </plugin>
