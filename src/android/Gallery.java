@@ -61,34 +61,40 @@ public class Gallery extends CordovaPlugin {
    * @param activity the activity
    * @return ArrayList with photos
    */
+    /**
+   * Get All Photos.
+   * @param activity the activity
+   * @return ArrayList with images Path
+   */
   private ArrayList<String> getAllPhotos(Activity activity) {
-    int thumbnailImageID;
-    String thumbnailPath;
 
-    final String[] projection = {MediaStore.Images.Thumbnails.DATA, MediaStore.Images.Thumbnails.IMAGE_ID};
-    Cursor thumbnailsCursor = activity.getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, projection, null, null, null);
-    
-    int thumbnailColumnIndex = thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
+    Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+    ArrayList<String> Photos = new ArrayList<String>();
 
-    ArrayList<String> result = new ArrayList<String>(thumbnailsCursor.getCount());
+    String[] mediaColumns = new String[] {
+      MediaStore.Images.Media._ID, 
+      MediaStore.Images.Media.DATA,
+      "(SELECT _data FROM thumbnails WHERE thumbnails.image_id =images._id) AS thumbnail"
+    };
 
-    if (thumbnailsCursor.moveToFirst()) {
-      do {
-        // Generate a tiny thumbnail version.
-        thumbnailImageID = thumbnailsCursor.getInt(thumbnailColumnIndex);
-        thumbnailPath = thumbnailsCursor.getString(thumbnailImageID);
-        // Uri thumbnailUri = Uri.parse(thumbnailPath);
-        // Uri fullImageUri = uriToFullImage(thumbnailsCursor, activity);
+    Cursor cursor = activity.getContentResolver().query(uri, mediaColumns, null, null, MediaStore.Images.Media.DATE_ADDED + " desc");
 
-        // Create the list item.
-        // PhotoItem newItem = new PhotoItem(thumbnailUri, fullImageUri);
-        result.add(thumbnailPath);
-      } while (thumbnailsCursor.moveToNext());
+    assert cursor != null;
+
+    String fullPath = null;
+    String thumbnailPath = null;
+
+    while (cursor.moveToNext()) {
+      String fullPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+      if (fullPath.endsWith(".gif")) {
+        continue;
+      }
+      String thumbnailPath = cursor.getString(cursor.getColumnIndex("thumbnail"));
+      Photos.add(thumbnailPath + "?" + fullPath);
     }
     
-    thumbnailsCursor.close();
-    
-    return result;
+    cursor.close();
+    return Photos;
   }
 
   /**
