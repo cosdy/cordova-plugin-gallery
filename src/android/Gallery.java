@@ -45,19 +45,11 @@ public class Gallery extends CordovaPlugin {
             callbackContext.success(new JSONArray(getAllPhotos(cordova.getActivity())));
           }
         });
+        
         return true;
       }
 
-      // if (ACTION_GET_ALL_ALBUMS.equals(action)) {
-      //   // DO operation in thread pool to avoid cordova thread blocking
-      //   cordova.getThreadPool().execute(new Runnable() {
-      //     public void run() {
-      //       // Return list of images in JSON Array
-      //       callbackContext.success(new JSONObject(getAllAlbums(cordova.getActivity())));
-      //     }
-      //   });
-      //   return true;
-      // }
+      return false;
     } catch (Exception e) {
       e.printStackTrace();
       return false;
@@ -70,7 +62,6 @@ public class Gallery extends CordovaPlugin {
    * @return ArrayList with photos
    */
   private ArrayList<String> getAllPhotos(Activity activity) {
-
     int thumbnailImageID;
     String thumbnailPath;
 
