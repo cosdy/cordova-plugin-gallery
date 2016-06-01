@@ -60,35 +60,28 @@ public class Gallery extends CordovaPlugin {
   /**
    * Get All Photos.
    * @param activity the activity
-   * @return ArrayList with images Path
+   * @return ArrayList with photos
    */
-  private ArrayList<ArrayList> getAllPhotos(Activity activity) {
+  private ArrayList<String> getAllPhotos(Activity activity) {
     Uri uri;
-    Cursor cursor;
+    String[] projection;
+    Cursor thumbnailsCursor;
     int column_index_data;
 
     uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-    final String[] projection = {MediaStore.Images.Thumbnails.DATA, MediaStore.Images.Thumbnails.IMAGE_ID};
-
-    Cursor thumbnailsCursor = activity.getContentResolver().query(uri, projection, null, null, null);
-
-    // Extract the proper column thumbnails
+    projection = {MediaStore.Images.Thumbnails.DATA, MediaStore.Images.Thumbnails.IMAGE_ID};
+    thumbnailsCursor = activity.getContentResolver().query(uri, projection, null, null, null);
     column_index_data = thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
 
-    ArrayList<ArrayList> photos = new ArrayList<ArrayList>(thumbnailsCursor.getCount());
+    ArrayList<String> photos = new ArrayList<String>(thumbnailsCursor.getCount());
 
-    if (thumbnailsCursor.moveToFirst()) {
-      do {
-        // Generate a tiny thumbnail version.
-        int thumbnailImageID = thumbnailsCursor.getInt(column_index_data);
-        String thumbnailPath = thumbnailsCursor.getString(thumbnailImageID);
-        String fullPath = toFullPath(thumbnailsCursor, activity);
+    while (thumbnailsCursor.moveToNext()) {
+      // Generate a tiny thumbnail version.
+      int thumbnailImageID = thumbnailsCursor.getInt(column_index_data);
+      String thumbnailPath = thumbnailsCursor.getString(thumbnailImageID);
+      // String fullPath = toFullPath(thumbnailsCursor, activity);
 
-        ArrayList<String> photo = new ArrayList<String>(2);
-        photo.add(thumbnailPath);
-        photo.add(fullPath);
-        photos.add(photo);
-      } while (thumbnailsCursor.moveToNext());
+      photos.add(thumbnailPath);
     }
     
     thumbnailsCursor.close();
@@ -99,23 +92,23 @@ public class Gallery extends CordovaPlugin {
   /**
    * Get the path to the full image for a given thumbnail.
    */
-  private static String toFullPath(Cursor thumbnailsCursor, Activity activity){
-    String imageId = thumbnailsCursor.getString(thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.IMAGE_ID));
+  // private String toFullPath(Cursor thumbnailsCursor, Activity activity){
+  //   String imageId = thumbnailsCursor.getString(thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.IMAGE_ID));
 
-    // Request image related to this thumbnail
-    String[] filePathColumn = { MediaStore.Images.Media.DATA };
-    Cursor imagesCursor = activity.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, filePathColumn, MediaStore.Images.Media._ID + "=?", new String[]{imageId}, null);
+  //   // Request image related to this thumbnail
+  //   String[] filePathColumn = { MediaStore.Images.Media.DATA };
+  //   Cursor imagesCursor = activity.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, filePathColumn, MediaStore.Images.Media._ID + "=?", new String[]{imageId}, null);
 
-    if (imagesCursor != null && imagesCursor.moveToFirst()) {
-      int columnIndex = imagesCursor.getColumnIndex(filePathColumn[0]);
-      String filePath = imagesCursor.getString(columnIndex);
-      imagesCursor.close();
-      return filePath;
-    } else {
-      imagesCursor.close();
-      return new String("");
-    }
-  }
+  //   if (imagesCursor != null && imagesCursor.moveToFirst()) {
+  //     int columnIndex = imagesCursor.getColumnIndex(filePathColumn[0]);
+  //     String filePath = imagesCursor.getString(columnIndex);
+  //     imagesCursor.close();
+  //     return filePath;
+  //   } else {
+  //     imagesCursor.close();
+  //     return new String("");
+  //   }
+  // }
 
   /**
    * Get All Albums.
