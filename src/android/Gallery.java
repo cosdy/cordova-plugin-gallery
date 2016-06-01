@@ -65,6 +65,7 @@ public class Gallery extends CordovaPlugin {
   private ArrayList<ArrayList> getAllPhotos(Activity activity) {
     Uri uri;
     Cursor cursor;
+    int column_index_data;
 
     uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     final String[] projection = {MediaStore.Images.Thumbnails.DATA, MediaStore.Images.Thumbnails.IMAGE_ID};
@@ -72,21 +73,20 @@ public class Gallery extends CordovaPlugin {
     Cursor thumbnailsCursor = activity.getContentResolver().query(uri, projection, null, null, null);
 
     // Extract the proper column thumbnails
-    int thumbnailColumnIndex = thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
+    int column_index_data = thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
 
     ArrayList<ArrayList> photos = new ArrayList<ArrayList>(thumbnailsCursor.getCount());
 
     if (thumbnailsCursor.moveToFirst()) {
       do {
         // Generate a tiny thumbnail version.
-        int thumbnailImageID = thumbnailsCursor.getInt(thumbnailColumnIndex);
+        int thumbnailImageID = thumbnailsCursor.getInt(column_index_data);
         String thumbnailPath = thumbnailsCursor.getString(thumbnailImageID);
-        Uri thumbnailUri = Uri.parse(thumbnailPath);
-        Uri fullImageUri = uriToFullImage(thumbnailsCursor, activity);
+        String fullPath = toFullPath(thumbnailsCursor, activity);
 
         ArrayList<String> photo = new ArrayList<String>(2);
-        photo.add(thumbnailUri);
-        photo.add(fullImageUri);
+        photo.add(thumbnailPath);
+        photo.add(fullPath);
         photos.add(photo);
       } while (thumbnailsCursor.moveToNext());
     }
@@ -99,7 +99,7 @@ public class Gallery extends CordovaPlugin {
   /**
    * Get the path to the full image for a given thumbnail.
    */
-  private static Uri uriToFullImage(Cursor thumbnailsCursor, Activity activity){
+  private static String toFullPath(Cursor thumbnailsCursor, Activity activity){
     String imageId = thumbnailsCursor.getString(thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.IMAGE_ID));
 
     // Request image related to this thumbnail
@@ -110,10 +110,10 @@ public class Gallery extends CordovaPlugin {
       int columnIndex = imagesCursor.getColumnIndex(filePathColumn[0]);
       String filePath = imagesCursor.getString(columnIndex);
       imagesCursor.close();
-      return Uri.parse(filePath);
+      return filePath;
     } else {
       imagesCursor.close();
-      return Uri.parse("");
+      return new String("");
     }
   }
 
