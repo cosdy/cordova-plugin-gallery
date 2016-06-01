@@ -73,7 +73,7 @@ public class Gallery extends CordovaPlugin {
     Cursor thumbnailsCursor = activity.getContentResolver().query(uri, projection, null, null, null);
 
     // Extract the proper column thumbnails
-    int column_index_data = thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
+    column_index_data = thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
 
     ArrayList<ArrayList> photos = new ArrayList<ArrayList>(thumbnailsCursor.getCount());
 
