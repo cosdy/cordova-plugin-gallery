@@ -85,11 +85,11 @@ public class Gallery extends CordovaPlugin {
     String thumbnailPath = null;
 
     while (cursor.moveToNext()) {
-      String fullPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+      fullPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
       if (fullPath.endsWith(".gif")) {
         continue;
       }
-      String thumbnailPath = cursor.getString(cursor.getColumnIndex("thumbnail"));
+      thumbnailPath = cursor.getString(cursor.getColumnIndex("thumbnail"));
       Photos.add(thumbnailPath + "?" + fullPath);
     }
     
