@@ -17,8 +17,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 
-import android.net.Uri;
-
 public class Gallery extends CordovaPlugin {
 
   private static final String ACTION_GET_ALL_PHOTOS = "getAllPhotos";
