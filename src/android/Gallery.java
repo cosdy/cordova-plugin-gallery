@@ -3,6 +3,8 @@ package org.apache.cordova.gallery;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.io.File;
+import java.util.List;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -16,6 +18,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
+
+import android.content.Context;
+import android.content.CursorLoader;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
+
 
 public class Gallery extends CordovaPlugin {
 
@@ -49,8 +58,6 @@ public class Gallery extends CordovaPlugin {
       //   });
       //   return true;
       // }
-
-      return false;
     } catch (Exception e) {
       e.printStackTrace();
       return false;
@@ -63,32 +70,34 @@ public class Gallery extends CordovaPlugin {
    * @return ArrayList with photos
    */
   private ArrayList<String> getAllPhotos(Activity activity) {
-    Uri uri;
-    Cursor thumbnailsCursor;
-    int column_index_data;
+
     int thumbnailImageID;
     String thumbnailPath;
 
+    final String[] projection = {MediaStore.Images.Thumbnails.DATA, MediaStore.Images.Thumbnails.IMAGE_ID};
+    Cursor thumbnailsCursor = context.getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, projection, null, null, null);
+    
+    int thumbnailColumnIndex = thumbnailsCursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
 
-    uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-    String[] projection = {MediaStore.Images.Thumbnails.DATA, MediaStore.Images.Thumbnails.IMAGE_ID};
-    thumbnailsCursor = activity.getContentResolver().query(uri, projection, null, null, null);
-    column_index_data = thumbnailsCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.DATA);
+    ArrayList<String> result = new ArrayList<String>(thumbnailsCursor.getCount());
 
-    ArrayList<String> photos = new ArrayList<String>();
+    if (thumbnailsCursor.moveToFirst()) {
+      do {
+        // Generate a tiny thumbnail version.
+        thumbnailImageID = thumbnailsCursor.getInt(thumbnailColumnIndex);
+        thumbnailPath = thumbnailsCursor.getString(thumbnailImageID);
+        // Uri thumbnailUri = Uri.parse(thumbnailPath);
+        // Uri fullImageUri = uriToFullImage(thumbnailsCursor, context);
 
-    while (thumbnailsCursor.moveToNext()) {
-      // Generate a tiny thumbnail version.
-      thumbnailImageID = thumbnailsCursor.getInt(column_index_data);
-      thumbnailPath = thumbnailsCursor.getString(thumbnailImageID);
-      // String fullPath = toFullPath(thumbnailsCursor, activity);
-
-      photos.add(thumbnailPath);
+        // Create the list item.
+        // PhotoItem newItem = new PhotoItem(thumbnailUri, fullImageUri);
+        result.add(thumbnailPath);
+      } while (thumbnailsCursor.moveToNext());
     }
     
     thumbnailsCursor.close();
     
-    return photos;
+    return result;
   }
 
   /**
